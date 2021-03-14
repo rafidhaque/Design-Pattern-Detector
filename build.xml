@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="DP-CORE" default="dist" basedir=".">
+
+	<description>
+		DP-CORE: A Design Pattern Detection Tool for Code Reuse
+	</description>
+
+	<property name="src" location="src" />
+	<property name="bin" location="bin" />
+	<property name="dist" location="dist" />
+	<property name="examples" location="examples" />
+	<property name="patterns" location="patterns" />
+	<property name="version.num" value="0.1" />
+	<tstamp>
+		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+	</tstamp>
+
+	<target name="init" description="create the bin folder">
+		<mkdir dir="${bin}" />
+	</target>
+
+	<target name="compile" depends="init" description="compile the java files">
+		<javac includeantruntime="true" srcdir="${src}" destdir="${bin}" />
+	</target>
+
+	<target name="initdist" description="create the dist folder">
+		<mkdir dir="${dist}" />
+		<mkdir dir="${dist}/patterns" />
+		<mkdir dir="${dist}/examples" />
+	</target>
+
+	<target name="copypatterns" depends="initdist" description="copy the patterns folder">
+		<copy todir="${dist}/patterns">
+			<fileset dir="${patterns}" includes="**" />
+		</copy>
+	</target>
+
+	<target name="copyexamples" depends="initdist" description="copy the examples folder">
+		<copy todir="${dist}/examples">
+			<fileset dir="${examples}" includes="**" />
+		</copy>
+	</target>
+
+	<target name="copyreadme" depends="initdist" description="copy the examples folder">
+		<copy file="README.md" tofile="${dist}/readme.txt" />
+		<copy file="LICENSE.md" tofile="${dist}/license.txt" />
+	</target>
+
+	<target name="dist" depends="compile,copyreadme,copypatterns,copyexamples" description="create the jar file">
+		<jar jarfile="${dist}/DP-CORE.jar" basedir="${bin}">
+			<manifest>
+				<attribute name="Main-Class" value="gui.MainWindow" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Version" value="${version.num}" />
+				<attribute name="Built-Date" value="${TODAY}" />
+			</manifest>
+			<zipfileset excludes="META-INF/*.SF" src="${java.home}/../lib/tools.jar" />
+		</jar>
+	</target>
+
+	<target name="createziprelease" depends="dist" description="create the zip file of the release">
+		<zip destfile="${dist}/DP-CORE_v${version.num}.zip">
+			<zipfileset dir="${dist}" excludes="*.zip" />
+		</zip>
+	</target>
+
+	<target name="clean" description="delete all build directories">
+		<delete dir="${bin}" />
+		<delete dir="${dist}" />
+	</target>
+
+</project>
+
